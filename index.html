@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#126b50"><meta name="description" content="ماركت أبو خديجة - قارئ باركود وكاشير وإدارة مخزون">
+<link rel="manifest" href="manifest.json"><title>ماركت أبو خديجة</title>
+<style>
+:root{--green:#126b50;--dark:#123b30;--bg:#f3f6f4;--line:#e1e9e4;--muted:#65756d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#18251f}
+header{background:linear-gradient(135deg,var(--green),#0c4938);color:white;padding:22px 18px 18px;border-radius:0 0 24px 24px}
+h1{font-size:22px;margin:0 0 5px}.sub{opacity:.85;font-size:13px}.wrap{max-width:760px;margin:auto;padding:14px}
+.tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+button,.tab{border:0;border-radius:12px;padding:12px 10px;font:inherit;font-weight:650;cursor:pointer}
+.tab{background:white;color:var(--dark);border:1px solid var(--line)}.tab.active,.primary{background:var(--green);color:white}
+.card{background:white;border:1px solid var(--line);border-radius:17px;padding:15px;margin:12px 0;box-shadow:0 3px 12px #102b1910}
+h2{font-size:17px;margin:0 0 12px}.muted{color:var(--muted);font-size:13px}
+input{width:100%;padding:13px;border:1px solid #d7e1da;border-radius:11px;font:inherit;background:#fff;margin:5px 0 10px}
+label{font-size:13px;color:#42534a} .grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}.actions button{flex:1}
+.secondary{background:#edf4f0;color:var(--dark)}.danger{background:#fff0ed;color:#a33224}
+#reader{width:100%;overflow:hidden;border-radius:14px;background:#111;min-height:180px}#reader video{width:100%}
+.product{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--line);padding:11px 0}
+.product:last-child{border:0}.price{font-weight:750;color:var(--green)}.pill{font-size:11px;background:#eaf4ee;padding:4px 8px;border-radius:20px}
+.hidden{display:none!important}.total{font-size:23px;font-weight:800;color:var(--green)}
+.notice{padding:10px 12px;border-radius:11px;background:#fff7df;color:#6b5010;font-size:13px;margin:10px 0}
+#status{font-size:12px;color:#e8fff2;margin-top:8px}
+</style>
+</head>
+<body>
+<header><h1>🛒 ماركت أبو خديجة</h1><div class="sub">الباركود • الكاشير • إدارة المخزون</div><div id="status">وضع التشغيل: محلي — جهّز إعدادات السحابة للربط</div></header>
+<main class="wrap">
+<div class="tabs">
+<button class="tab active" data-tab="scan">📷 الباركود</button><button class="tab" data-tab="products">📦 المنتجات</button><button class="tab" data-tab="cart">🧾 الكاشير</button>
+</div>
+<section id="scan" class="panel">
+<div class="card"><h2>قراءة باركود بالكاميرا</h2><div id="reader"></div>
+<div class="actions" style="margin-top:10px"><button class="primary" id="startScan">تشغيل الكاميرا</button><button class="secondary" id="stopScan">إيقاف</button></div>
+<label>أو اكتب / الصق رقم الباركود</label><input id="barcodeInput" placeholder="مثال: 622xxxxxxxxxx" inputmode="numeric">
+<button class="primary" style="width:100%" id="lookup">بحث عن المنتج</button><div id="scanResult" class="muted" style="margin-top:12px">وجّه الكاميرا إلى الباركود أو أدخل الرقم يدويًا.</div></div>
+<div class="card"><h2>إضافة منتج سريع</h2><div class="grid2"><div><label>رقم الباركود</label><input id="newBarcode" placeholder="رقم الباركود"></div><div><label>اسم المنتج</label><input id="newName" placeholder="اسم المنتج"></div><div><label>السعر بالجنيه</label><input id="newPrice" type="number" min="0" step=".01" placeholder="0"></div><div><label>الكمية بالمخزن</label><input id="newQty" type="number" min="0" step="1" placeholder="0"></div></div><button class="primary" style="width:100%" id="saveProduct">حفظ المنتج</button></div>
+</section>
+<section id="products" class="panel hidden"><div class="card"><h2>المنتجات والمخزون</h2><input id="productSearch" placeholder="ابحث بالاسم أو الباركود"><div id="productList"></div></div></section>
+<section id="cart" class="panel hidden"><div class="card"><h2>فاتورة البيع</h2><label>باركود المنتج لإضافته للفاتورة</label><div class="actions"><input id="cartBarcode" placeholder="امسح أو اكتب الباركود"><button class="primary" id="addCart">إضافة</button></div><div id="cartList"></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:15px"><b>الإجمالي</b><span class="total" id="total">0.00 ج</span></div><button class="primary" id="completeSale" style="width:100%;margin-top:12px">تأكيد البيع وخصم المخزون</button><button class="secondary" id="clearCart" style="width:100%;margin-top:8px">تفريغ الفاتورة</button></div></section>
+<div class="muted" style="text-align:center;padding:14px">ماركت أبو خديجة © — احفظ نسخة احتياطية من بياناتك بانتظام</div>
+</main>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, doc, setDoc, getDocs, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+// ضع بيانات مشروع Firebase هنا لتفعيل المزامنة السحابية بين الأجهزة.
+const firebaseConfig = { apiKey:"PUT_API_KEY_HERE", authDomain:"PUT_PROJECT.firebaseapp.com", projectId:"PUT_PROJECT_ID", storageBucket:"PUT_PROJECT.appspot.com", messagingSenderId:"PUT_SENDER_ID", appId:"PUT_APP_ID" };
+let db=null, cloud=false, products=[], cart=[];
+const $=id=>document.getElementById(id);
+const money=n=>Number(n||0).toFixed(2)+" ج";
+const localLoad=()=>{try{return JSON.parse(localStorage.getItem("aboKhadigaProducts")||"[]")}catch{return []}};
+const persist=()=>localStorage.setItem("aboKhadigaProducts",JSON.stringify(products));
+function renderProducts(){
+ const q=($("productSearch")?.value||"").trim().toLowerCase();
+ const arr=products.filter(p=>(p.name+" "+p.barcode).toLowerCase().includes(q));
+ $("productList").innerHTML=arr.length?arr.map(p=>`<div class="product"><div><b>${esc(p.name)}</b><div class="muted">${esc(p.barcode)} · المخزون: ${p.qty}</div></div><div style="text-align:left"><div class="price">${money(p.price)}</div><button class="secondary" data-edit="${esc(p.barcode)}">تعديل</button></div></div>`).join(""):'<p class="muted">لا توجد منتجات بعد. أضف أول منتج من تبويب الباركود.</p>';
+}
+function esc(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+async function save(p){const i=products.findIndex(x=>x.barcode===p.barcode);if(i>=0)products[i]=p;else products.push(p);persist();if(cloud)await setDoc(doc(db,"products",p.barcode),p);renderProducts()}
+async function loadCloud(){onSnapshot(collection(db,"products"),snap=>{products=snap.docs.map(d=>d.data());persist();renderProducts();$("status").textContent="متصل بالسحابة — المنتجات تتزامن بين الأجهزة";});}
+try{if(firebaseConfig.apiKey.startsWith("AIza")&&firebaseConfig.projectId!=="PUT_PROJECT_ID"){const app=initializeApp(firebaseConfig);db=getFirestore(app);cloud=true;await loadCloud()}else{products=localLoad();$("status").textContent="وضع محلي تجريبي — أضف إعدادات Firebase للمزامنة السحابية"} }catch(e){products=localLoad();$("status").textContent="تعذر الاتصال بالسحابة؛ يعمل التطبيق محليًا"}
+renderProducts();
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===b));document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("hidden",x.id!==b.dataset.tab));if(b.dataset.tab==="products")renderProducts()});
+$("saveProduct").onclick=async()=>{let p={barcode:$("newBarcode").value.trim(),name:$("newName").value.trim(),price:Number($("newPrice").value),qty:Number($("newQty").value||0)};if(!p.barcode||!p.name||!Number.isFinite(p.price)||p.price<0){alert("أدخل الباركود والاسم والسعر بشكل صحيح");return}await save(p);["newBarcode","newName","newPrice","newQty"].forEach(id=>$(id).value="");alert("تم حفظ المنتج")};
+function lookup(code){let p=products.find(x=>x.barcode===code.trim());$("scanResult").innerHTML=p?`<div class="card"><b>${esc(p.name)}</b><div class="price">${money(p.price)}</div><div class="muted">المتاح بالمخزن: ${p.qty}</div><button class="primary" id="quickAdd">أضف للفاتورة</button></div>`:'<div class="notice">الباركود غير مسجل. أضف المنتج من النموذج بالأسفل.</div>';if(p)$("quickAdd").onclick=()=>addToCart(p.barcode)}
+$("lookup").onclick=()=>lookup($("barcodeInput").value);$("barcodeInput").onkeydown=e=>{if(e.key==="Enter")lookup(e.target.value)};
+$("productSearch").oninput=renderProducts;
+$("productList").onclick=e=>{let code=e.target.dataset.edit;if(!code)return;let p=products.find(x=>x.barcode===code);let name=prompt("اسم المنتج",p.name);if(name===null)return;let price=prompt("السعر",p.price);if(price===null)return;let qty=prompt("الكمية",p.qty);if(qty===null)return;save({...p,name,price:Number(price),qty:Number(qty)})};
+function addToCart(code){let p=products.find(x=>x.barcode===code);if(!p){alert("المنتج غير مسجل");return}let item=cart.find(x=>x.barcode===code);if(item)item.count++;else cart.push({...p,count:1});renderCart()}
+function renderCart(){$("cartList").innerHTML=cart.map(p=>`<div class="product"><div><b>${esc(p.name)}</b><div class="muted">${p.count} × ${money(p.price)}</div></div><div class="actions"><button class="secondary" data-minus="${esc(p.barcode)}">−</button><button class="secondary" data-plus="${esc(p.barcode)}">+</button></div></div>`).join("")||'<p class="muted">الفاتورة فارغة.</p>';$("total").textContent=money(cart.reduce((s,p)=>s+p.price*p.count,0))}
+function addInput(){addToCart($("cartBarcode").value.trim());$("cartBarcode").value=""}
+$("addCart").onclick=addInput;$("cartBarcode").onkeydown=e=>{if(e.key==="Enter")addInput()};
+$("cartList").onclick=e=>{let c=e.target.dataset.plus||e.target.dataset.minus;if(!c)return;let p=cart.find(x=>x.barcode===c);if(e.target.dataset.plus)p.count++;else p.count--;cart=cart.filter(x=>x.count>0);renderCart()};
+$("clearCart").onclick=()=>{cart=[];renderCart()};
+$("completeSale").onclick=async()=>{if(!cart.length)return alert("الفاتورة فارغة");for(let item of cart){let p=products.find(x=>x.barcode===item.barcode);if(!p||p.qty<item.count)return alert("الكمية غير كافية للمنتج: "+item.name)}
+for(let item of cart){let p=products.find(x=>x.barcode===item.barcode);p.qty-=item.count;if(cloud)await setDoc(doc(db,"products",p.barcode),p)}persist();cart=[];renderCart();renderProducts();alert("تم تأكيد البيع وخصم الكميات")};
+let stream=null,scanLoop=false;
+$("startScan").onclick=async()=>{try{if(!("BarcodeDetector"in window)){alert("متصفحك لا يدعم قارئ الباركود المدمج. افتح التطبيق بمتصفح Chrome حديث أو أدخل الرقم يدويًا.");return}stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});let video=document.createElement("video");video.srcObject=stream;video.setAttribute("playsinline",true);video.style.width="100%";$("reader").replaceChildren(video);await video.play();let detector=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]});scanLoop=true;async function tick(){if(!scanLoop)return;try{let codes=await detector.detect(video);if(codes.length){let v=codes[0].rawValue;$("barcodeInput").value=v;lookup(v);stopCamera();return}}catch{}requestAnimationFrame(tick)}tick()}catch(e){alert("لم نتمكن من فتح الكاميرا. اسمح للموقع باستخدام الكاميرا وتأكد أنك تفتحه عبر HTTPS.")}};
+function stopCamera(){scanLoop=false;if(stream)stream.getTracks().forEach(t=>t.stop());stream=null}
+$("stopScan").onclick=stopCamera;
+if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});
+</script></body></html>
