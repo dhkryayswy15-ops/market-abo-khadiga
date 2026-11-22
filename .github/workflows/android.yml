@@ -21,7 +21,7 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Prepare web folder from index.html
         run: |
@@ -47,4 +47,3 @@ jobs:
         with:
           name: market-abo-khadiga-apk
           path: android/app/build/outputs/apk/debug/app-debug.apk
-
